@@ -1,0 +1,17 @@
+node_modules
+Dockerfile
+.dockerignore
+.git
+.gitignore
+h5p/content
+h5p/content/**/*
+h5p/core
+h5p/core/**/*
+h5p/editor
+h5p/editor/**/*
+h5p/libraries
+h5p/libraries/**/*
+h5p/temporary-storage
+h5p/temporary-storage/**/*
+h5p/user-data
+h5p/user-data/**/*

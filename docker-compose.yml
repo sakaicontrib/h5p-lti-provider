@@ -1,0 +1,41 @@
+version: "3.1"
+services:
+  app:
+    image: "h5p-lti_img"
+    container_name: h5p-lti-provider
+    working_dir: /home/node/app/h5p-nodejs-library
+    ports:
+      - "8080:8080"
+    #volumes:
+      #- ./h5p:/home/node/app/h5p
+      #- ./certs/:/etc/letsencrypt/live/localhost/
+      #- ./certs/:/etc/letsencrypt/archive/
+    networks:
+      - myinternal
+    #env_file: ./.env
+    environment:
+      DEBUG: ${DEBUG} #REMOVE ME
+      PORT: ${PORT}
+      CACHE: ${CACHE}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
+    build:
+      context: ./provider
+      dockerfile: Dockerfile
+    command: npm run start
+    #command: bash -c "npm run build && npm run start"
+    #keep container running
+    tty: true
+    stdin_open: true
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - myinternal
+
+networks:
+  myinternal:
