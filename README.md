@@ -2,15 +2,8 @@
 
 ## Running from bash
 
-- Create .env file
-  >PORT=9090
-  >DEBUG='h5p-example'
-  >CACHE=redis
-  >REDIS_HOST=localhost
-  >REDIS_PORT=6379
-  >REDIS_DB=0
-- cd .../h5p-lti-provider/provider
-- export $(grep -v '^#' ../.env | xargs -0)  (CARE: only 2 points)
+- Create provider/.env file
+- cd provider
 - npm  install  -D  typescript
 - npm  install
 - npm  run  download
@@ -19,13 +12,7 @@
 
 ## Running from Docker
 
-- Create .env file
-  >PORT=9090
-  >DEBUG='h5p-example'
-  >CACHE=redis
-  >REDIS_HOST=redis
-  >REDIS_PORT=6379
-  >REDIS_DB=0
-- cd .../h5p-lti-provider
+- Create .env and provider/.env files
 - docker compose build
 - docker compose up
+- FULL: docker compose down && docker compose rm -f && docker image prune -f && docker volume prune -f && docker compose build --no-cache && docker compose up -d

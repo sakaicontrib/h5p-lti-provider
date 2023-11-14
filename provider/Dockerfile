@@ -9,6 +9,5 @@ RUN npm install
 RUN npm run download
 RUN npm run build
 
-EXPOSE 8080
-#ENTRYPOINT ["npm", "run start"]
-CMD [ "ls", "-al" ]
+# EXPOSE 9090
+# ENTRYPOINT ["npm", "run start"]

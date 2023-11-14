@@ -1,0 +1,22 @@
+{
+    "tit.existing_content": "Existing content",
+    "new_content": "Create new content",
+    "edit": "Edit",
+    "download": "Download",
+    "download_html": "Download HTML",
+    "delete": "Delete",
+    "insert": "Insert",
+    "select": "Select",
+    "create": "Create",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "close": "Close",
+    "confirm": "Confirm",
+    "msg.confirm_delete": "Are you sure you want to delete?",
+    "error.invalid_session": "Session invalid. Please login via LTI to use this application.",
+    "error.no_item_selected": "No item selected",
+    "error.selecting_item": "Error selecting content {{contentId}}.",
+    "error.deleting_item": "Error deleting content {{contentId}}.",
+    "error.invalid_request": "Invalid request error. Select a content type."
+}

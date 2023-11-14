@@ -1,0 +1,22 @@
+{
+    "tit.existing_content": "Llistat d'elements",
+    "new_content": "Crear nou contingut",
+    "edit": "Editar",
+    "download": "Descarregar",
+    "download_html": "Descarregar HTML",
+    "delete": "Esborrar",
+    "insert": "Inserir",
+    "select": "Seleccionar",
+    "create": "Crear",
+    "save": "Guardar",
+    "cancel": "Cancel·lar",
+    "back": "Arrere",
+    "close": "Tancar",
+    "confirm": "Confirmar",
+    "msg.confirm_delete": "Està segur que desitja esborrar?",
+    "error.invalid_session": "Sessió invàlida. Per favor, connecte's via LTI per a accedir a esta aplicació.",
+    "error.no_item_selected": "No hi ha cap element seleccionat",
+    "error.selecting_item": "Error en seleccionar el contingut {{contentId}}.",
+    "error.deleting_item": "Error en esborrar el contingut {{contentId}}.",
+    "error.invalid_request": "Error petició invàlida. Seleccione un tipus de contingut."
+}

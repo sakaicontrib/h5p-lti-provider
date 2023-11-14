@@ -1,0 +1,22 @@
+{
+    "tit.existing_content": "Listado de elementos",
+    "new_content": "Crear nuevo contenido",
+    "edit": "Editar",
+    "download": "Descargar",
+    "download_html": "Descargar HTML",
+    "delete": "Borrar",
+    "insert": "Insertar",
+    "select": "Seleccionar",
+    "create": "Crear",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "back": "Atrás",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "msg.confirm_delete": "¿Está seguro que desea borrar?",
+    "error.invalid_session": "Sesión inválida. Por favor, conéctese via LTI para acceder a esta aplicación.",
+    "error.no_item_selected": "No hay ningún elemento seleccionado",
+    "error.selecting_item": "Error al seleccionar el contenido {{contentId}}.",
+    "error.deleting_item": "Error al borrar el contenido {{contentId}}.",
+    "error.invalid_request": "Error petición inválida. Seleccione un tipo de contenido."
+}

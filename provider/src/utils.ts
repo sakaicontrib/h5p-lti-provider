@@ -7,7 +7,7 @@ import fsExtra from 'fs-extra';
  * @param port The port at which the server can be accessed.
  */
 export function displayIps(port: string): void {
-    console.log('Example H5P NodeJs server is running:');
+    console.log('Server is running:');
     const networkInterfaces = os.networkInterfaces();
 
     // eslint-disable-next-line guard-for-in

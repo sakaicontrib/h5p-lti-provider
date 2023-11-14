@@ -5,26 +5,14 @@ services:
     container_name: h5p-lti-provider
     working_dir: /home/node/app/h5p-nodejs-library
     ports:
-      - "8080:8080"
-    #volumes:
-      #- ./h5p:/home/node/app/h5p
-      #- ./certs/:/etc/letsencrypt/live/localhost/
-      #- ./certs/:/etc/letsencrypt/archive/
+      - "${NODE_PORT}:${NODE_PORT}"
     networks:
       - myinternal
-    #env_file: ./.env
-    environment:
-      DEBUG: ${DEBUG} #REMOVE ME
-      PORT: ${PORT}
-      CACHE: ${CACHE}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-      REDIS_DB: ${REDIS_DB}
+    env_file: ./provider/.env
     build:
       context: ./provider
       dockerfile: Dockerfile
     command: npm run start
-    #command: bash -c "npm run build && npm run start"
     #keep container running
     tty: true
     stdin_open: true
@@ -33,9 +21,30 @@ services:
     image: "redis:alpine"
     container_name: redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+       - 'redis_data_container:/data'
     networks:
       - myinternal
+
+  mongodb:
+    image: "mongodb/mongodb-community-server:latest"
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "${MONGODB_PORT}:${MONGODB_PORT}"
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+      MONGODB_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_INITDB_DATABASE: ${MONGODB_DB}
+    volumes:
+       - 'mongodb_data_container:/data/db'
+    networks:
+      - myinternal
+
+volumes:
+  redis_data_container:
+  mongodb_data_container:
 
 networks:
   myinternal:

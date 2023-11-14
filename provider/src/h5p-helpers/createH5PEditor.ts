@@ -1,21 +1,17 @@
+import debug from 'debug';
+
 import { Cache, caching } from 'cache-manager';
 import redisStore from 'cache-manager-redis-store';
 import ioredis from 'ioredis';
-import debug from 'debug';
-import type { Db } from 'mongodb';
 
 import * as H5P from '@lumieducation/h5p-server';
 import * as dbImplementations from '@lumieducation/h5p-mongos3';
 import RedisLockProvider from '@lumieducation/h5p-redis-lock';
 import { ILockProvider } from '@lumieducation/h5p-server';
 
-let mongoDb;
-async function getMongoDb(): Promise<Db> {
-    if (!mongoDb) {
-        mongoDb = await dbImplementations.initMongo();
-    }
-    return mongoDb;
-}
+import cron from 'node-cron';
+
+import getMongoDb from '../mongo';
 
 /**
  * Create a H5PEditor object.
@@ -40,6 +36,7 @@ async function getMongoDb(): Promise<Db> {
  */
 export default async function createH5PEditor(
     config: H5P.IH5PConfig,
+    permissionSystem: H5P.IPermissionSystem,
     localLibraryPath: string,
     localContentPath?: string,
     localTemporaryPath?: string,
@@ -47,9 +44,8 @@ export default async function createH5PEditor(
     translationCallback?: H5P.ITranslationFunction
 ): Promise<H5P.H5PEditor> {
     let cache: Cache;
-		console.log("CACHE: "+process.env.CACHE);
     if (process.env.CACHE === 'in-memory') {
-        debug('h5p-example')(
+        debug('h5p-editor')(
             `Using in memory cache for caching library storage.`
         );
         cache = caching({
@@ -58,7 +54,7 @@ export default async function createH5PEditor(
             max: 2 ** 10
         });
     } else if (process.env.CACHE === 'redis') {
-        debug('h5p-example')(
+        debug('h5p-editor')(
             `Using Redis for caching library storage (${process.env.REDIS_HOST}:${process.env.REDIS_PORT}, db: ${process.env.REDIS_DB})`
         );
         cache = caching({
@@ -66,17 +62,17 @@ export default async function createH5PEditor(
             host: process.env.REDIS_HOST,
             port: process.env.REDIS_PORT,
             auth_pass: process.env.REDIS_AUTH_PASS,
-            db: process.env.REDIS_DB,
+            db: process.env.REDIS_DB_LIBRARY_CACHE,
             ttl: 60 * 60 * 24
         });
     } else {
-        debug('h5p-example')('Not using any cache for library storage');
+        debug('h5p-editor')('Not using any cache for library storage');
         // using no cache
     }
 
     let lock: ILockProvider;
     if (process.env.LOCK === 'redis') {
-        debug('h5p-example')(
+        debug('h5p-editor')(
             `Using Redis as lock provider (host: ${process.env.LOCK_REDIS_HOST}:${process.env.LOCK_REDIS_PORT}, db: ${process.env.LOCK_REDIS_DB}).`
         );
         lock = new RedisLockProvider(
@@ -89,7 +85,7 @@ export default async function createH5PEditor(
             )
         );
     } else {
-        debug('h5p-example')(`Using simple in-memory lock provider.`);
+        debug('h5p-editor')(`Using simple in-memory lock provider.`);
         lock = new H5P.SimpleLockProvider();
     }
 
@@ -98,7 +94,7 @@ export default async function createH5PEditor(
 
     let libraryStorage: H5P.ILibraryStorage;
     if (process.env.LIBRARYSTORAGE === 'mongo') {
-        debug('h5p-example')('Using pure MongoDB for library storage.');
+        debug('h5p-editor')('Using pure MongoDB for library storage.');
         const mongoLibraryStorage = new dbImplementations.MongoLibraryStorage(
             (await getMongoDb()).collection(
                 process.env.LIBRARY_MONGO_COLLECTION
@@ -107,7 +103,7 @@ export default async function createH5PEditor(
         await mongoLibraryStorage.createIndexes();
         libraryStorage = mongoLibraryStorage;
     } else if (process.env.LIBRARYSTORAGE === 'mongos3') {
-        debug('h5p-example')('Using MongoDB / S3 for library storage');
+        debug('h5p-editor')('Using MongoDB / S3 for library storage');
         const mongoS3LibraryStorage =
             new dbImplementations.MongoS3LibraryStorage(
                 dbImplementations.initS3({
@@ -211,7 +207,8 @@ export default async function createH5PEditor(
         {
             enableHubLocalization: true,
             enableLibraryNameLocalization: true,
-            lockProvider: lock
+            lockProvider: lock,
+            permissionSystem
         },
         contentUserDataStorage
     );
@@ -225,7 +222,15 @@ export default async function createH5PEditor(
         await (
             h5pEditor.temporaryStorage as any
         ).setBucketLifecycleConfiguration(h5pEditor.config);
-    }
+    } 
+    
+    cron.schedule('*/5 * * * *', () => {
+        h5pEditor.temporaryFileManager.cleanUp();
+    });
+
+    cron.schedule('* */12 * * *', () => {
+        h5pEditor.contentTypeCache.updateIfNecessary();
+    });
 
     return h5pEditor;
 }
