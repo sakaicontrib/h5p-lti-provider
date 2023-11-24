@@ -1,5 +1,29 @@
 # H5P LTI Provider
 
+## Intoduction
+
+This is an LTI tool designed to provide H5P contents to an LMS. Its origin comes from the S2U project (https://sakaiproject.atlassian.net/browse/S2U-41) where was demmanded to create such kind of tool.
+This tool is developed in NodeJS and is based in two libraries:
+- Lumi H5P: https://www.npmjs.com/package/h5p-nodejs-library (better search for @lumieducation/h5p-* packages) --> https://github.com/Lumieducation/H5P-Nodejs-library
+- IMS-LTI: https://www.npmjs.com/package/ims-lti --> https://github.com/omsmith/ims-lti
+
+IMS-LTI library only supports LTI v1.0, and it has been addapted to work with Content Item requests.
+
+As this tool is based on lumi H5P library, it can be configured to work and store data in different ways:
+- Cache: in-memory | redis | none (default)
+- Lock (used in multi-node/clustered environment): redis | in-memory (default)
+- Library storage: mongo | mongo + S3 | filesystem (default)
+- User Data storage: mongo | filesystem (default)
+- Content storage: mongo + S3 | filesystem (default)
+- Temporary storage: S3 | filesystem (default)
+
+We have packaged all this tool, one redis and one mongodb services in a docker compose project, so we can run everything with a default configuration in few steps.
+
+**Important**: Content storage is configured to save everything inside the filesystem. This filesystem is linked with the host "content" folder via a Docker volume. Be sure this folder has the right writing permissions (especially in Linux systems) or contents cannot be created.
+
+![Config](docs/config.png "Config")
+
+
 ## Running from Docker {#docker}
 
 - Create .env and provider/.env files from their .example
@@ -10,6 +34,7 @@
     - OAUTH_CONSUMER_KEY and OAUTH_SECRET: LTI related.
     - SESSION_SECRET: Used to secure sessions.
   - Other variables can be left with their default value. Remember to read carefully provider/.env file for advanced configuration.
+- Confirm content folder has write permissions.
 - Run these commands:
     ```
     docker compose build
@@ -26,6 +51,7 @@
 
 ## Running from bash
 
+If you only want to run the NodeJS part outside the docker infrastructure, you can execute it from bash. Notice that, you need to have node and npm installed. Also, if you still using Redis or MongoDB services, you must point to their corresponding URL + port.
 - Create provider/.env file from provider/.env.example
   - These variables must be changed (this .env file is prepared to run via docker):
     - PORT: Specifies on which port the Node applicacion runs.
@@ -73,7 +99,14 @@ This tool is intended to be played both, as a simple LTI launch (a external tool
 - Lessons LTI Tool:
     ![Lessons LTI](docs/lessons-lti.png "Lessons LTI")
 
+Also, remember to enable the outcome service in Sakai to allow the LTI tool to return grades back. To do so, add this property to sakai.properties file:
+
+    basiclti.outcomes.enabled=true
 
 ## LTI requests
 
 ![LTI Requests](docs/requests.png "LTI Requests")
+
+## How it works
+
+![Working example](docs/h5p-lti.gif "Working example")
