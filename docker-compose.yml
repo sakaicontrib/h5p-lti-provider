@@ -1,13 +1,17 @@
 version: "3.1"
 services:
   app:
-    image: "h5p-lti_img"
     container_name: h5p-lti-provider
-    working_dir: /home/node/app/h5p-nodejs-library
+    depends_on:
+      - redis
+      - mongodb
+    working_dir: /home/node/app
     ports:
       - "${NODE_PORT}:${NODE_PORT}"
     networks:
       - myinternal
+    volumes:
+       - './content:/home/node/app/h5p/content:rw'
     env_file: ./provider/.env
     build:
       context: ./provider
@@ -17,13 +21,14 @@ services:
     tty: true
     stdin_open: true
 
+
   redis:
     image: "redis:alpine"
     container_name: redis
     ports:
       - "${REDIS_PORT}:${REDIS_PORT}"
     volumes:
-       - 'redis_data_container:/data'
+       - 'redis_data_volume:/data'
     networks:
       - myinternal
 
@@ -38,13 +43,15 @@ services:
       MONGODB_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
       MONGODB_INITDB_DATABASE: ${MONGODB_DB}
     volumes:
-       - 'mongodb_data_container:/data/db'
+       - 'mongodb_data_volume:/data/db'
+       - 'mongodb_dataconfig_volume:/data/configdb'
     networks:
       - myinternal
 
 volumes:
-  redis_data_container:
-  mongodb_data_container:
+  redis_data_volume:
+  mongodb_data_volume:
+  mongodb_dataconfig_volume:
 
 networks:
   myinternal:

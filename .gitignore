@@ -1,4 +1,6 @@
 node_modules/
 .env
+.env.docker
+.env.local
 provider/h5p/*
 provider/build/*

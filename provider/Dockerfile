@@ -1,8 +1,8 @@
 FROM node:lts
 
 USER node
-RUN mkdir -p /home/node/app/h5p-nodejs-library
-WORKDIR /home/node/app/h5p-nodejs-library
+RUN mkdir -p /home/node/app
+WORKDIR /home/node/app
 COPY --chown=node:node . ./
 RUN npm install -D typescript
 RUN npm install
