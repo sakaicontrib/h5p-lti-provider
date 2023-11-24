@@ -46,3 +46,6 @@ mv "$base/tmp/core/h5p-php-library-$core_version"/* "$base/core/"
 mv "$base/tmp/editor/h5p-editor-php-library-$editor_version"/* "$base/editor/"
 
 rm -rf "$base/tmp"
+
+#patch jQuery file
+sh scripts/patch-jquery.sh

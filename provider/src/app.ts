@@ -59,6 +59,7 @@ const start = async (): Promise<void> => {
 				directives: {
 					"default-src": ["'self'", "'unsafe-inline'", "https://h5p.org", ...accepted_lti_consumers],
 					"img-src": ["'self'", "data:", "https://h5p.org"],
+					"font-src": ["'self'", "data:", "https://h5p.org"],
 					"frame-ancestors": ["'self'", ...accepted_lti_consumers]
 				},
 			},
