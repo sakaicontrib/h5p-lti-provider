@@ -67,16 +67,29 @@ export default function render(
 
 						<script>
 							window.onload = (event) => {
-								//when delete button is clicked, get data-id from button and set data-contentid in confirm button
+								//when delete/select button is clicked, get data-id from button and set data-contentid in confirm button
 								const modalElem = document.getElementById('confirmModal');
-								modalElem.addEventListener('shown.bs.modal', function (e) {
+								modalElem.addEventListener('show.bs.modal', function (e) {
 									const id = e.relatedTarget.dataset.id;
-									document.getElementById('btnConfirmDel').dataset.contentid = id;
+									const target = e.relatedTarget.dataset.target;
+									const target_msg = e.relatedTarget.dataset.targetmsg || target;
+
+									//store data in confirm button
+									const btn = document.getElementById('btnConfirm');
+									btn.dataset.contentid = id;
+									btn.dataset.target = target;
+									
+									//hide all messages
+									modalElem.querySelectorAll('.msg_confirm').forEach((elem) => {
+										elem.classList.add('d-none');
+									});
+									//show only targeted message
+									modalElem.querySelector('#msg_confirm_'+target_msg).classList.remove('d-none');
 								})
 							};
 							
 							function doConfirm(btn){
-								btn.href = "${editor.config.baseUrl}/delete/" + btn.dataset.contentid;
+								btn.href = \`${editor.config.baseUrl}/\${btn.dataset.target}/\${btn.dataset.contentid}\`;
 								return true;
 							}
 						</script>
@@ -136,15 +149,15 @@ export default function render(
 															</a>
 														</div>
 														<div class="p-2">
-															<button type="button" class="btn btn-danger" data-id="${content.id}" data-bs-toggle="modal" data-bs-target="#confirmModal">
+															<button type="button" class="btn btn-danger" data-id="${content.id}" data-target="delete" data-bs-toggle="modal" data-bs-target="#confirmModal">
 																<span class="fa fa-trash-alt m-1"></span>
 																${req.t("delete", { ns: 'frontend' })}
 															</button>
 														</div>
 														<div class="p-2">
-															<a class="btn btn-light" href="${editor.config.baseUrl}/select/${content.id}" title="${req.t("select", { ns: 'frontend' })}">
+															<button type="button" title="${req.t((selectedItem && content.id == selectedItem) ? "unselect" : "select", { ns: 'frontend' })}" class="btn btn-light" data-id="${content.id}" data-target="select" ${(selectedItem && content.id == selectedItem) ? 'data-targetmsg="unselect"' : ''}  data-bs-toggle="modal" data-bs-target="#confirmModal">
 																<span class="${(selectedItem && content.id == selectedItem) ? 'selectedItem fa-solid' : 'fa-regular'} fa-star m-1"></span>
-															</a>
+															</button>
 														</div>
 													</div>
 												</div>`
@@ -163,11 +176,13 @@ export default function render(
 										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${req.t("close", { ns: 'frontend' })}"></button>
 									</div>
 									<div class="modal-body">
-										${req.t("msg.confirm_delete", { ns: 'frontend' })}
+										<span id="msg_confirm_delete" class="msg_confirm d-none">${req.t("msg.confirm_delete", { ns: 'frontend' })}</span>
+										<span id="msg_confirm_select" class="msg_confirm d-none">${req.t("msg.confirm_select", { ns: 'frontend' })}</span>
+										<span id="msg_confirm_unselect" class="msg_confirm d-none">${req.t("msg.confirm_unselect", { ns: 'frontend' })}</span>
 									</div>
 									<div class="modal-footer">
 										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${req.t("cancel", { ns: 'frontend' })}</button>
-										<a id="btnConfirmDel" class="btn btn-primary" onclick="doConfirm(this)">${req.t("confirm", { ns: 'frontend' })}</a>
+										<a id="btnConfirm" class="btn btn-primary" onclick="doConfirm(this)">${req.t("confirm", { ns: 'frontend' })}</a>
 									</div>
 								</div>
 							</div>
